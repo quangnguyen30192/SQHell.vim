@@ -16,3 +16,4 @@ command! -nargs=1 -complete=custom,sqhell#GetHosts SQHSwitchConnection call sqhe
 command! -nargs=1 SQHDropDatabase execute ":call " . g:sqh_provider . "#DropDatabase(<q-args>, 0)"
 command! -nargs=+ SQHDropTableFromDatabase execute ":call " . g:sqh_provider . "#DropTableFromDatabase(<f-args>, 0)"
 command! -nargs=* SQHSortResults execute ':call ' . g:sqh_provider . '#SortResults(<f-args>)'
+command! -nargs=0 SQHSwitchProviderToCurrentSetting call sqhell#SwitchProviderToCurrentSetting()

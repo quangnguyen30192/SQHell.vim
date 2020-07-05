@@ -1,6 +1,18 @@
 let s:buffer_id = -1
 let s:window_id = -1
 
+function! sqhell#SwitchProviderToCurrentSetting() abort
+  let l:provider = ''
+
+  if has_key(g:sqh_connections[g:sqh_connection], 'provider')
+    let current_provider = g:sqh_connections[g:sqh_connection]['provider']
+    let g:sqh_provider = l:current_provider
+    echo "The sql provider is now " . l:current_provider
+  else
+    echo "The sql provider is not set"
+  endif
+endfunction
+
 "This is for completion of the
 ":SQHSwitchConnection command"
 function! sqhell#GetHosts(arglead, cmdline, cursorPos)
@@ -16,6 +28,9 @@ function! sqhell#SwitchConnection(connection)
     endif
 
     let g:sqh_connection = a:connection
+
+    echo "The current connection is " . a:connection
+    call sqhell#SwitchProviderToCurrentSetting()
 endfunction
 
 "Inserts SQL results into a new temporary buffer"

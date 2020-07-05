@@ -11,7 +11,7 @@ function! mysql#GetSystemCommand(user, password, host, database, port, command)
     let l:port = ''
 
     if a:port !=? ''
-        let l:port = '-P' . a:port . ' '
+        let l:port = '-P ' . a:port . ' '
     endif
 
     return 'mysql --unbuffered ' . l:user . l:password . l:database . l:host . l:port . '--table -e ' . shellescape(a:command)

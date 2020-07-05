@@ -1,4 +1,4 @@
-function! mysql#GetSystemCommand(user, password, host, database, command)
+function! mysql#GetSystemCommand(user, password, host, database, port, command)
     let l:user = '-u' . a:user . ' '
     let l:password = '-p' . a:password . ' '
     let l:host = '-h' . a:host . ' '
@@ -8,10 +8,16 @@ function! mysql#GetSystemCommand(user, password, host, database, command)
         let l:database = '-D' . a:database . ' '
     endif
 
-    return 'mysql --unbuffered ' . l:user . l:password . l:database . l:host . '--table -e ' . shellescape(a:command)
+    let l:port = ''
+
+    if a:port !=? ''
+        let l:port = '-P' . a:port . ' '
+    endif
+
+    return 'mysql --unbuffered ' . l:user . l:password . l:database . l:host . l:port . '--table -e ' . shellescape(a:command)
 endfunction
 
-function! mysql#GetResultsFromQuery(command)
+function! mysql#GetQueryCommandFromCurrentConfig(command)
     let l:user = g:sqh_connections[g:sqh_connection]['user']
     let l:password = g:sqh_connections[g:sqh_connection]['password']
     let l:host = g:sqh_connections[g:sqh_connection]['host']
@@ -24,9 +30,18 @@ function! mysql#GetResultsFromQuery(command)
         let l:database = g:sqh_connections[g:sqh_connection]['database']
     endif
 
-    let l:system_command = mysql#GetSystemCommand(l:user, l:password, l:host, l:database, a:command)
-    let l:query_results = system(l:system_command)
-    return l:query_results
+    let l:port = ''
+
+    if has_key(g:sqh_connections[g:sqh_connection], 'port')
+        let l:port = g:sqh_connections[g:sqh_connection]['port']
+    endif
+
+    return mysql#GetSystemCommand(l:user, l:password, l:host, l:database, l:port, a:command)
+endfunction
+
+function! mysql#GetResultsFromQuery(command)
+    let l:system_command = mysql#GetQueryCommandFromCurrentConfig(a:command)
+    return system(l:system_command)
 endfunction
 
 "This is ran when press 'K' on an SQHTable buffer"

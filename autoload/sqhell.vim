@@ -97,6 +97,12 @@ function! sqhell#InsertResultsToNewBuffer(local_filetype, query_results, format)
     execute 'setlocal filetype=' . a:local_filetype
 endfunction
 
+function! sqhell#GetTablesFromDatabase()
+  let l:database = g:sqh_connections[g:sqh_connection]['database']
+  execute 'let ret = ' . g:sqh_provider . '#GetTablesFromDatabaseQueryCommand("' . l:database . '")'
+  return l:ret
+endfunction
+
 "Proxies to the provider of choice
 function! sqhell#ShowTablesForDatabase(database)
     execute 'call ' . g:sqh_provider . '#ShowTablesForDatabase("' . a:database.'")'

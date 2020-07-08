@@ -47,3 +47,7 @@ function! psql#PostBufferFormat()
     endif
 endfunction
 
+function! psql#GetTablesFromDatabaseQueryCommand(database) abort
+  let query = "select tablename from pg_catalog.pg_tables where schemaname = 'public'"
+  return psql#GetQueryCommandFromCurrentConfig(l:query)
+endfunction

@@ -329,3 +329,8 @@ function! mysql#GetUpdateQuery(columns, values, prev_values)
     let query = 'UPDATE ' . db . '.' . table . assign . where
     return query
 endfunction
+
+function! mysql#GetTablesFromDatabaseQueryCommand(database) abort
+  let query = 'SHOW TABLES FROM ' . a:database
+  return msql#GetQueryCommandFromCurrentConfig(l:query)
+endfunction

@@ -1,15 +1,29 @@
-function! psql#GetResultsFromQuery(command)
+function! psql#GetSystemCommand(user, password, host, database, port, command)
+    let l:user = '-U' . a:user . ' '
+    let l:password = 'PGPASSWORD=' . a:password . ' '
+    let l:host = '-h ' . a:host . ' '
+    let l:database = '-d '. a:database . ' '
+    let l:port = '-p '. a:port . ' '
+
+    let l:connection_details = l:password . 'psql ' . l:user . l:host . l:database . l:port . ' --pset footer'
+
+    return 'echo ' . shellescape(join(split(a:command, "\n"))) . ' | ' . l:connection_details
+endfunction
+
+function! psql#GetQueryCommandFromCurrentConfig(command)
     let l:user = g:sqh_connections[g:sqh_connection]['user']
     let l:password = g:sqh_connections[g:sqh_connection]['password']
     let l:host = g:sqh_connections[g:sqh_connection]['host']
-    let l:db = g:sqh_connections[g:sqh_connection]['database']
+    let l:port = g:sqh_connections[g:sqh_connection]['port']
+    let l:database = g:sqh_connections[g:sqh_connection]['database']
 
-    let l:connection_details = 'PGPASSWORD='. l:password . ' psql -U' . l:user . ' -h ' . l:host . ' -d ' . l:db . ' --pset footer'
-    let l:system_command = 'echo ' . shellescape(join(split(a:command, "\n"))) . ' | ' . l:connection_details
-    let l:query_results = system(l:system_command)
-    return l:query_results
+    return psql#GetSystemCommand(l:user, l:password, l:host, l:database, l:port, a:command)
 endfunction
 
+function! psql#GetResultsFromQuery(command)
+    let l:system_command = psql#GetQueryCommandFromCurrentConfig(a:command)
+    return system(l:system_command)
+endfunction
 
 function! psql#ShowDatabases()
     let db_query = 'SELECT datname FROM pg_database WHERE datistemplate = false;'
@@ -26,6 +40,10 @@ endfunction
 
 function! psql#PostBufferFormat()
     keepjumps normal! ggdd
-    keepjumps normal! Gdkgg
+
+    " delete the last empty line
+    if empty(getline('$'))
+      keepjumps normal! Gddgg
+    endif
 endfunction
 

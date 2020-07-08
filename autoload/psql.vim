@@ -30,6 +30,11 @@ function! psql#ShowDatabases()
     call sqhell#InsertResultsToNewBuffer('SQHDatabase', psql#GetResultsFromQuery(db_query), 1)
 endfunction
 
+function! psql#ShowTablesForDatabase(database)
+    let db_query = "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname not in ('pg_catalog', 'information_schema');"
+    call sqhell#InsertResultsToNewBuffer('SQHDatabase', psql#GetResultsFromQuery(db_query), 1)
+endfunction
+
 function! psql#SortResults(sort_options)
     let cursor_pos = getpos('.')
     let line_until_cursor = getline('.')[:cursor_pos[2]]

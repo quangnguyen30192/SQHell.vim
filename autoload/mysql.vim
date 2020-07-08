@@ -332,5 +332,5 @@ endfunction
 
 function! mysql#GetTablesFromDatabaseQueryCommand(database) abort
   let query = 'SHOW TABLES FROM ' . a:database
-  return msql#GetQueryCommandFromCurrentConfig(l:query)
+  return mysql#GetQueryCommandFromCurrentConfig(l:query)
 endfunction
